@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Afterlife Games</title>
+<title>Afterlife Arcade</title>
 <style>
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -14,6 +14,29 @@ body {
   color: #cce8ff;
   cursor: none;
   overflow-x: hidden;
+}
+
+#home-btn {
+  position: fixed;
+  top: 14px;
+  left: 16px;
+  z-index: 9000;
+  background: #061428;
+  border: 1.5px solid #1a5e9a;
+  color: #88ccff;
+  padding: 8px 18px;
+  border-radius: 9px;
+  font-size: 0.92rem;
+  font-weight: 700;
+  text-decoration: none;
+  cursor: none;
+  transition: border-color .15s, color .15s, box-shadow .15s;
+  letter-spacing: .4px;
+}
+#home-btn:hover {
+  border-color: #00aaff;
+  color: #e0f4ff;
+  box-shadow: 0 0 10px #00aaff44;
 }
 
 #cursor {
@@ -266,11 +289,12 @@ h1 {
 </head>
 <body>
 
+<a id="home-btn" href="https://games67.vercel.app" target="_blank">&#8592; Home</a>
 <div id="cursor"></div>
 <canvas id="particles"></canvas>
 
 <div class="page">
-  <h1>games</h1>
+  <h1>afterlife arcade</h1>
   <div class="controls">
     <input type="text" id="search" placeholder="search here...">
     <select id="sort">
@@ -408,8 +432,24 @@ document.getElementById('btn-site').addEventListener('click', function(){
   var blob = new Blob([activeGame.html], {type:'text/html'});
   var url = URL.createObjectURL(blob);
   document.getElementById('game-title-bar').textContent = 'Playing: ' + activeGame.name;
-  document.getElementById('game-frame').src = url;
+  var frame = document.getElementById('game-frame');
+  frame.src = url;
   document.getElementById('game-overlay').classList.add('open');
+
+  frame.onload = function() {
+    try {
+      var iwin = frame.contentWindow;
+      var frect = frame.getBoundingClientRect();
+      window.addEventListener('resize', function(){ frect = frame.getBoundingClientRect(); });
+      iwin.addEventListener('mousemove', function(e) {
+        cursor.style.left = (frect.left + e.clientX) + 'px';
+        cursor.style.top  = (frect.top  + e.clientY) + 'px';
+      });
+      var style = iwin.document.createElement('style');
+      style.textContent = '*, *::before, *::after { cursor: none !important; }';
+      iwin.document.head.appendChild(style);
+    } catch(e) {}
+  };
 });
 
 document.getElementById('btn-full').addEventListener('click', function(){

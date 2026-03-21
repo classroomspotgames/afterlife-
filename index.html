@@ -5,6 +5,10 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <title>afterlife♡</title>
 
+<script src="/uv.bundle.js"></script>
+<script src="/uv.config.js"></script>
+<script src="/index.js"></script>
+
 <link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,100..1000;1,9..40,100..1000&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 
@@ -13,137 +17,143 @@
 
 html, body {
   width: 100%; height: 100%;
-  font-family: 'DM Sans', sans-serif;
   background: linear-gradient(135deg, #0a1628 0%, #0d2a5e 25%, #1a4a8a 50%, #2196c4 75%, #56c8e8 100%);
   overflow: hidden;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  font-family: 'DM Sans', sans-serif;
 }
 
-/* Cursor */
 #cursor {
-  position: fixed;
-  width: 12px; height: 12px;
-  background: #00d4ff;
-  border-radius: 50%;
-  pointer-events: none;
-  z-index: 99999;
+  position: fixed; width: 12px; height: 12px;
+  background: #00d4ff; border-radius: 50%;
+  pointer-events: none; z-index: 99999;
   transform: translate(-50%, -50%);
   box-shadow: 0 0 6px #00d4ff, 0 0 12px #00d4ff, 0 0 24px #00aaff, 0 0 40px #0088ff;
 }
 
-/* Particles */
 #particles-canvas {
   position: fixed; top: 0; left: 0;
   width: 100%; height: 100%;
   pointer-events: none; z-index: 0;
 }
 
-/* Hub */
-.hub {
-  position: relative; z-index: 2;
+/* TOP BAR */
+.browser-ui {
+  position: relative; z-index: 10; height: 96px;
+  background: rgba(5,20,60,0.55);
+  backdrop-filter: blur(18px); -webkit-backdrop-filter: blur(18px);
   display: flex; flex-direction: column;
-  align-items: center; gap: 28px;
+  border-bottom: 1px solid rgba(100,200,255,0.18);
 }
 
-/* Title */
-.title {
-  font-size: clamp(2.6rem, 7vw, 5rem);
-  font-weight: 700;
-  letter-spacing: 0.06em;
-  background: linear-gradient(135deg, #fff 0%, #a8e6ff 40%, #00d4ff 70%, #0088ff 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  filter: drop-shadow(0 0 28px rgba(0,180,255,0.55));
-  animation: pulse 3s ease-in-out infinite;
+.tabs {
+  height: 38px; display: flex;
+  align-items: center; padding: 0 8px; gap: 6px; overflow-x: auto;
 }
-@keyframes pulse {
-  0%,100% { filter: drop-shadow(0 0 18px rgba(0,180,255,0.45)); }
-  50%      { filter: drop-shadow(0 0 48px rgba(0,210,255,0.9)); }
+.tab {
+  height: 28px; min-width: 160px; max-width: 220px;
+  padding: 0 12px; border-radius: 8px 8px 0 0;
+  background: rgba(0,80,160,0.4); color: #99ccff;
+  display: flex; align-items: center; gap: 8px; font-size: 13px;
+}
+.tab.active { background: rgba(0,100,200,0.6); color: #e0f4ff; }
+.tab span { flex:1; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.tab i { opacity:.6; }
+.tab i:hover { opacity:1; color:#ff6b6b; }
+.newtab {
+  width:32px; height:32px; border-radius:6px; border:none;
+  background:transparent; color:#88bbdd; font-size:14px;
+}
+.newtab:hover { background:rgba(0,120,200,0.3); }
+
+.navbar {
+  height:58px; display:flex; align-items:center; gap:10px; padding:0 12px;
+}
+.navbar button {
+  width:34px; height:34px; border-radius:50%; border:none;
+  background:transparent; color:#88ccee; font-size:14px;
+}
+.navbar button:hover { background:rgba(0,150,255,0.2); color:#00d4ff; }
+
+.urlbar {
+  flex:1; height:36px; background:rgba(0,30,80,0.6); border-radius:18px;
+  padding:0 16px; display:flex; align-items:center;
+  border:1px solid rgba(0,180,255,0.25);
+}
+.urlbar input {
+  width:100%; height:100%; background:transparent; border:none; outline:none;
+  color:#c8eeff; font-size:14px; font-family:'DM Sans',sans-serif;
+}
+.urlbar input::placeholder { color:rgba(130,190,230,0.5); }
+
+.viewframe {
+  position:absolute; top:96px; left:0;
+  width:100%; height:calc(100% - 96px);
+  border:none; display:none; z-index:5;
+}
+.viewframe.active { display:block; }
+
+/* NTP */
+.ntp {
+  position:absolute; top:96px; left:0;
+  width:100%; height:calc(100% - 96px);
+  display:flex; flex-direction:column;
+  align-items:center; justify-content:center;
+  pointer-events:none; z-index:2; gap:28px;
 }
 
-/* Clock card */
-.card {
-  background: rgba(255,255,255,0.09);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 1px solid rgba(255,255,255,0.18);
-  border-radius: 24px;
-  padding: 28px 38px;
-  width: 320px;
-  text-align: center;
-  box-shadow: 0 8px 40px rgba(0,0,0,0.3);
+.ntp-title {
+  font-size:clamp(2.6rem,7vw,5rem); font-weight:700; letter-spacing:0.06em;
+  background:linear-gradient(135deg,#fff 0%,#a8e6ff 40%,#00d4ff 70%,#0088ff 100%);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  filter:drop-shadow(0 0 28px rgba(0,180,255,0.55));
+  animation:glow 3s ease-in-out infinite;
+}
+@keyframes glow {
+  0%,100%{filter:drop-shadow(0 0 18px rgba(0,180,255,0.45));}
+  50%{filter:drop-shadow(0 0 48px rgba(0,210,255,0.9));}
 }
 
-#clock {
-  font-size: 2.2rem;
-  font-weight: 700;
-  color: #fff;
-  letter-spacing: 0.04em;
+.clock-card {
+  background:rgba(255,255,255,0.09);
+  backdrop-filter:blur(20px); -webkit-backdrop-filter:blur(20px);
+  border:1px solid rgba(255,255,255,0.18); border-radius:24px;
+  padding:28px 38px; width:320px; text-align:center;
+  box-shadow:0 8px 40px rgba(0,0,0,0.3);
 }
-
-#date {
-  margin-top: 6px;
-  font-size: 1rem;
-  font-weight: 500;
-  color: rgba(180,230,255,0.85);
-}
-
+#clock { font-size:2.2rem; font-weight:700; color:#fff; letter-spacing:0.04em; }
+#date  { margin-top:6px; font-size:1rem; font-weight:500; color:rgba(180,230,255,0.85); }
 .widget-row {
-  margin-top: 18px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #e0f4ff;
+  margin-top:18px; display:flex; align-items:center;
+  justify-content:space-between; font-size:1rem; font-weight:700; color:#e0f4ff;
 }
+#battery,#weather { display:flex; align-items:center; gap:8px; }
 
-#battery, #weather { display: flex; align-items: center; gap: 8px; }
-
-/* Game controller button */
+/* Game button */
 .game-btn {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 10px;
-  text-decoration: none;
-  transition: transform 0.2s ease;
+  pointer-events:all;
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  text-decoration:none; transition:transform 0.2s ease;
 }
-.game-btn:hover { transform: scale(1.12); }
-
+.game-btn:hover { transform:scale(1.12); }
 .game-icon {
-  width: 72px; height: 72px;
-  background: rgba(255,255,255,0.09);
-  backdrop-filter: blur(14px);
-  -webkit-backdrop-filter: blur(14px);
-  border: 1px solid rgba(0,212,255,0.35);
-  border-radius: 20px;
-  display: flex; align-items: center; justify-content: center;
-  box-shadow: 0 0 18px rgba(0,180,255,0.25), 0 4px 20px rgba(0,0,0,0.25);
-  transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  width:72px; height:72px; background:rgba(255,255,255,0.09);
+  backdrop-filter:blur(14px); border:1px solid rgba(0,212,255,0.35);
+  border-radius:20px; display:flex; align-items:center; justify-content:center;
+  box-shadow:0 0 18px rgba(0,180,255,0.25),0 4px 20px rgba(0,0,0,0.25);
+  transition:box-shadow 0.2s ease,border-color 0.2s ease;
 }
 .game-btn:hover .game-icon {
-  box-shadow: 0 0 30px rgba(0,210,255,0.6), 0 4px 20px rgba(0,0,0,0.3);
-  border-color: rgba(0,212,255,0.75);
+  box-shadow:0 0 30px rgba(0,210,255,0.6),0 4px 20px rgba(0,0,0,0.3);
+  border-color:rgba(0,212,255,0.75);
 }
-
 .game-icon i {
-  font-size: 2rem;
-  background: linear-gradient(135deg, #a8e6ff, #00d4ff);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
+  font-size:2rem;
+  background:linear-gradient(135deg,#a8e6ff,#00d4ff);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
 }
-
 .game-label {
-  font-size: 0.7rem;
-  font-weight: 600;
-  letter-spacing: 0.22em;
-  text-transform: uppercase;
-  color: rgba(150, 210, 255, 0.65);
+  font-size:0.7rem; font-weight:600; letter-spacing:0.22em;
+  text-transform:uppercase; color:rgba(150,210,255,0.65);
 }
 </style>
 </head>
@@ -152,13 +162,24 @@ html, body {
 <div id="cursor"></div>
 <canvas id="particles-canvas"></canvas>
 
-<div class="hub">
+<div class="browser-ui">
+  <div class="tabs" id="tabs">
+    <button class="newtab" id="newtab"><i class="fas fa-plus"></i></button>
+  </div>
+  <div class="navbar">
+    <button id="back"><i class="fas fa-arrow-left"></i></button>
+    <button id="forward"><i class="fas fa-arrow-right"></i></button>
+    <button id="reload"><i class="fas fa-rotate-right"></i></button>
+    <form class="urlbar" id="form">
+      <input id="url" placeholder="Search or enter address" />
+    </form>
+    <button id="popout"><i class="fas fa-external-link"></i></button>
+  </div>
+</div>
 
-  <!-- Title -->
-  <h1 class="title">afterlife♡</h1>
-
-  <!-- Clock -->
-  <div class="card">
+<div class="ntp" id="ntp">
+  <h1 class="ntp-title">afterlife♡</h1>
+  <div class="clock-card">
     <div id="clock">00:00:00 AM</div>
     <div id="date">Loading...</div>
     <div class="widget-row">
@@ -172,23 +193,18 @@ html, body {
       </div>
     </div>
   </div>
-
-  <!-- Game Controller Button -->
   <a href="https://games67.vercel.app/games.html" class="game-btn" target="_blank" rel="noopener noreferrer">
-    <div class="game-icon">
-      <i class="fas fa-gamepad"></i>
-    </div>
+    <div class="game-icon"><i class="fas fa-gamepad"></i></div>
     <span class="game-label">Games</span>
   </a>
-
 </div>
 
 <script>
 /* Cursor */
-const cursor = document.getElementById('cursor');
+const cursorEl = document.getElementById('cursor');
 document.addEventListener('mousemove', e => {
-  cursor.style.left = e.clientX + 'px';
-  cursor.style.top  = e.clientY + 'px';
+  cursorEl.style.left = e.clientX + 'px';
+  cursorEl.style.top  = e.clientY + 'px';
 });
 
 /* Clock */
@@ -199,8 +215,7 @@ function updateClock() {
   document.getElementById('date').textContent =
     now.toLocaleDateString(undefined, { weekday:'long', year:'numeric', month:'long', day:'numeric' });
 }
-updateClock();
-setInterval(updateClock, 1000);
+updateClock(); setInterval(updateClock, 1000);
 
 /* Battery */
 function updateBattery() {
@@ -208,80 +223,133 @@ function updateBattery() {
     navigator.getBattery().then(b => {
       const lvl = Math.round(b.level * 100);
       const icon = document.getElementById('battery-icon');
-      const lbl  = document.getElementById('battery-level');
-      icon.className = lvl <= 10 ? 'fas fa-battery-empty' :
-                       lvl <= 30 ? 'fas fa-battery-quarter' :
-                       'fas fa-battery-three-quarters';
-      icon.style.color = lvl <= 10 ? '#f87171' : lvl <= 30 ? '#fbbf24' : '#4ade80';
-      lbl.textContent = lvl + '%';
+      icon.className = lvl<=10?'fas fa-battery-empty':lvl<=30?'fas fa-battery-quarter':'fas fa-battery-three-quarters';
+      icon.style.color = lvl<=10?'#f87171':lvl<=30?'#fbbf24':'#4ade80';
+      document.getElementById('battery-level').textContent = lvl + '%';
     });
   } else {
     document.getElementById('battery-icon').className = 'fas fa-plug';
     document.getElementById('battery-level').textContent = 'N/A';
   }
 }
-updateBattery();
-setInterval(updateBattery, 60000);
+updateBattery(); setInterval(updateBattery, 60000);
 
 /* Weather */
 function updateWeather() {
   const el = document.getElementById('temp-val');
-  const fetch_ = (lat, lon) => {
+  const go = (lat, lon) =>
     fetch(`https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current_weather=true&temperature_unit=fahrenheit`)
-      .then(r => r.json())
-      .then(d => { el.textContent = Math.round(d.current_weather.temperature) + '°F'; })
-      .catch(() => { el.textContent = 'N/A'; });
-  };
-  if (navigator.geolocation) {
-    navigator.geolocation.getCurrentPosition(
-      p => fetch_(p.coords.latitude, p.coords.longitude),
-      ()  => fetch_(34.58, -117.40)
-    );
-  } else { fetch_(34.58, -117.40); }
+      .then(r=>r.json()).then(d=>{ el.textContent = Math.round(d.current_weather.temperature)+'°F'; })
+      .catch(()=>{ el.textContent='N/A'; });
+  navigator.geolocation
+    ? navigator.geolocation.getCurrentPosition(p=>go(p.coords.latitude,p.coords.longitude),()=>go(34.58,-117.40))
+    : go(34.58,-117.40);
 }
-updateWeather();
-setInterval(updateWeather, 600000);
+updateWeather(); setInterval(updateWeather, 600000);
 
 /* Particles */
-(function() {
-  const c = document.getElementById('particles-canvas');
-  const ctx = c.getContext('2d');
-  let W, H, pts = [];
-  function resize() { W = c.width = innerWidth; H = c.height = innerHeight; }
-  window.addEventListener('resize', resize); resize();
-  const COLS = ['#00d4ff','#56c8e8','#a8e6ff','#0088ff','#4db8ff','#fff'];
-  class P {
-    constructor(init) {
-      this.x = Math.random() * (W || 800);
-      this.y = init ? Math.random() * (H || 600) : (H + 10);
-      this.r  = Math.random() * 2.2 + 0.4;
-      this.vx = (Math.random() - 0.5) * 0.35;
-      this.vy = -(Math.random() * 0.55 + 0.15);
-      this.a  = Math.random() * 0.65 + 0.15;
-      this.da = (Math.random() * 0.018 + 0.004) * (Math.random() > 0.5 ? 1 : -1);
-      this.col= COLS[Math.floor(Math.random()*COLS.length)];
+(function(){
+  const c=document.getElementById('particles-canvas'), ctx=c.getContext('2d');
+  let W,H,pts=[];
+  function resize(){W=c.width=innerWidth;H=c.height=innerHeight;}
+  window.addEventListener('resize',resize); resize();
+  const COLS=['#00d4ff','#56c8e8','#a8e6ff','#0088ff','#4db8ff','#fff'];
+  class P{
+    constructor(init){
+      this.x=Math.random()*W; this.y=init?Math.random()*H:H+10;
+      this.r=Math.random()*2.2+0.4; this.vx=(Math.random()-.5)*.35; this.vy=-(Math.random()*.55+.15);
+      this.a=Math.random()*.65+.15; this.da=(Math.random()*.018+.004)*(Math.random()>.5?1:-1);
+      this.col=COLS[Math.floor(Math.random()*COLS.length)];
     }
-    update() {
-      this.x += this.vx; this.y += this.vy;
-      this.a += this.da;
-      if (this.a > 0.82 || this.a < 0.05) this.da *= -1;
-      if (this.y < -10) { this.x = Math.random()*W; this.y = H+10; }
+    update(){
+      this.x+=this.vx; this.y+=this.vy; this.a+=this.da;
+      if(this.a>.82||this.a<.05)this.da*=-1;
+      if(this.y<-10){this.x=Math.random()*W;this.y=H+10;}
     }
-    draw() {
-      ctx.save(); ctx.globalAlpha = this.a;
-      ctx.fillStyle = this.col;
-      ctx.shadowColor = this.col; ctx.shadowBlur = this.r * 4;
-      ctx.beginPath(); ctx.arc(this.x, this.y, this.r, 0, Math.PI*2); ctx.fill();
-      ctx.restore();
+    draw(){
+      ctx.save(); ctx.globalAlpha=this.a; ctx.fillStyle=this.col;
+      ctx.shadowColor=this.col; ctx.shadowBlur=this.r*4;
+      ctx.beginPath(); ctx.arc(this.x,this.y,this.r,0,Math.PI*2); ctx.fill(); ctx.restore();
     }
   }
-  for (let i=0;i<180;i++) pts.push(new P(true));
-  (function loop() {
-    ctx.clearRect(0,0,W,H);
-    pts.forEach(p => { p.update(); p.draw(); });
-    requestAnimationFrame(loop);
-  })();
+  for(let i=0;i<180;i++) pts.push(new P(true));
+  (function loop(){ctx.clearRect(0,0,W,H);pts.forEach(p=>{p.update();p.draw();});requestAnimationFrame(loop);})();
 })();
+
+/* ===== UV BROWSER ===== */
+// Service worker — your file is uv.sw.js at root
+navigator.serviceWorker?.register('/uv.sw.js', { scope: '/' });
+
+// BareMux — your worker is worker.js at root, transport is index.mjs at root
+const connection = new BareMux.BareMuxConnection('/worker.js');
+connection.setTransport('/index.mjs', [{ websocket: 'wss://wisp.rhw.one/' }]);
+
+const tabsEl    = document.getElementById('tabs');
+const newTabBtn = document.getElementById('newtab');
+const urlInput  = document.getElementById('url');
+const ntp       = document.getElementById('ntp');
+let tabs=[], activeId=null, idCounter=0;
+
+function createTab(url='') {
+  const id=idCounter++;
+  const iframe=document.createElement('iframe');
+  iframe.className='viewframe'; iframe.dataset.id=id;
+  iframe.setAttribute('sandbox','allow-scripts allow-same-origin allow-forms allow-modals allow-popups');
+  document.body.appendChild(iframe);
+  const btn=document.createElement('div');
+  btn.className='tab'; btn.dataset.id=id;
+  btn.innerHTML=`<span>New Tab</span><i class="fas fa-xmark"></i>`;
+  btn.addEventListener('click',e=>{if(e.target.tagName==='I')closeTab(id);else activateTab(id);});
+  tabsEl.insertBefore(btn,newTabBtn);
+  tabs.push({id,iframe,tabBtn:btn,history:[],index:-1});
+  activateTab(id);
+  if(url) navigate(url);
+}
+
+function activateTab(id) {
+  activeId=id;
+  tabs.forEach(t=>{
+    t.iframe.classList.toggle('active',t.id===id);
+    t.tabBtn.classList.toggle('active',t.id===id);
+  });
+  const tab=getTab(); if(!tab) return;
+  if(tab.index>=0){urlInput.value=tab.history[tab.index];ntp.style.display='none';}
+  else{urlInput.value='';ntp.style.display='flex';}
+}
+
+function closeTab(id) {
+  if(tabs.length===1) return;
+  const i=tabs.findIndex(t=>t.id===id);
+  tabs[i].iframe.remove(); tabs[i].tabBtn.remove(); tabs.splice(i,1);
+  activateTab(tabs[Math.max(0,i-1)].id);
+}
+
+function normalize(input) {
+  if(!input.includes('.')) return 'https://search.brave.com/search?q='+encodeURIComponent(input);
+  if(!input.startsWith('http')) return 'https://'+input;
+  return input;
+}
+
+function navigate(input,push=true) {
+  const tab=getTab(); if(!tab) return;
+  const url=normalize(input);
+  if(push){tab.history=tab.history.slice(0,tab.index+1);tab.history.push(url);tab.index++;}
+  tab.iframe.src=__uv$config.prefix+__uv$config.encodeUrl(url);
+  urlInput.value=url; ntp.style.display='none';
+  tab.iframe.onload=()=>{
+    tab.tabBtn.querySelector('span').textContent=tab.iframe.contentDocument?.title||new URL(url).hostname;
+  };
+}
+
+function getTab(){return tabs.find(t=>t.id===activeId);}
+
+document.getElementById('back').onclick=()=>{const t=getTab();if(!t||t.index<=0)return;t.index--;navigate(t.history[t.index],false);};
+document.getElementById('forward').onclick=()=>{const t=getTab();if(!t||t.index>=t.history.length-1)return;t.index++;navigate(t.history[t.index],false);};
+document.getElementById('reload').onclick=()=>{const t=getTab();if(t)t.iframe.src=t.iframe.src;};
+document.getElementById('popout').onclick=()=>{const t=getTab();if(t)window.open(t.iframe.src,'_blank');};
+document.getElementById('form').onsubmit=e=>{e.preventDefault();if(urlInput.value.trim())navigate(urlInput.value);};
+newTabBtn.onclick=()=>createTab();
+createTab();
 </script>
 </body>
 </html>
